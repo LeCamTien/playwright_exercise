@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "npx playwright test --project=\"Google Chrome\" tests/tadashboard"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
