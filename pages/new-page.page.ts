@@ -31,5 +31,6 @@ export default class NewPage {
         }
 
         await this.btnOk.click();
+        await this.page.waitForLoadState();
     }
 }

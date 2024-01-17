@@ -1,4 +1,4 @@
-import { Locator, Page, expect } from "@playwright/test";
+import { Locator, Page, expect, test } from "@playwright/test";
 
 export default class LoginPage {
     readonly cbbRepository: Locator = this.page.locator('#repository');
@@ -12,7 +12,12 @@ export default class LoginPage {
         await this.page.goto(url);
     }
 
+    async displays(): Promise<void> {
+        await expect(this.btnLogin).toBeVisible();
+    }
+
     async login(username: string, password: string, repository?: string): Promise<void> {
+        await this.btnLogin.waitFor();
         if (repository !== undefined && repository !== null) {
             await this.cbbRepository.selectOption(repository);
         }
@@ -21,11 +26,13 @@ export default class LoginPage {
         await this.btnLogin.click();
     }
 
-    async verifyErrorMessage(message: string): Promise<void> {
-        this.page.on('dialog', async (d) => {
-            console.log(d.message);
-            expect(d.message()).toEqual(message);
-            await d.accept();
+    async verifyMessageDisplays(message: string): Promise<void> {
+        await test.step('Verify the dialog message', async () => {
+            this.page.on('dialog', async dialog => {
+                console.log(dialog.message);
+                expect(dialog.message().trim()).toEqual(message);
+                await dialog.accept();
+            });
         });
     }
 }
