@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx playwright test --project=\"Google Chrome\"",
+    "test": "npx playwright test --project=\"Google Chrome\" --workers=1",
+    "test-parallel": "npx playwright test --project=\"Google Chrome\"",
     "report": "npx playwright show-report"
   },
   "keywords": [],

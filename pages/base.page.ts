@@ -1,4 +1,4 @@
-import { Locator, Page } from "@playwright/test";
+import { Locator, Page, expect } from "@playwright/test";
 
 
 export abstract class BasePage {
@@ -11,5 +11,13 @@ export abstract class BasePage {
         await this.lnkUsername.waitFor();
         await this.lnkUsername.click();
         await this.lnkLogOut.click();
+    }
+
+    async checkControlNotExist(strLocator: string): Promise<void> {
+        await expect(this.page.locator(strLocator)).toBeHidden();
+    }
+
+    async checkControlExist(strLocator: string): Promise<void> {
+        await expect(this.page.locator(strLocator)).toBeVisible();
     }
 }

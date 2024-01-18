@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { test } from "@playwright/test";
 import { StringHelper } from "../../utils/string-helper";
 import { CommonHelper } from "../../utils/common-helper";
 import { AssertionHelper } from "../../utils/assertion-helper";
@@ -8,43 +8,80 @@ import DashboardMainPage from "../../pages/dashboard-main.page";
 import NewPage from "../../pages/new-page.page";
 
 
-test.skip('DA_MP_TC014 - Verify that "Public" pages can be visible and accessed by all users of working repository', async ({ page }) => {
+test('DA_MP_TC014 - Verify that "Public" pages can be visible and accessed by all users of working repository', async ({ page }) => {
     const pageName = StringHelper.generateString(10);
 
     const loginPage = new LoginPage(page);
     const dashboardMainPage = new DashboardMainPage(page);
     const newPage = new NewPage(page);
 
+    // Login
     await loginPage.goTo(Constant.URL);
     await loginPage.login(Constant.USERNAME, Constant.PASSWORD);
-    await dashboardMainPage.openAddNewPage();
+
+    // Add a new page
+    await dashboardMainPage.selectGlobalSettingOption('Add Page');
     await newPage.submitDataOnNewPage(pageName, true);
+
+    // Logout and re-login with another account
     await dashboardMainPage.logout();
     await loginPage.login(Constant.USERNAME2, Constant.PASSWORD);
+
+    // Check newly added page is visibled
     await dashboardMainPage.verifyNewPageAdded(pageName);
+
+    // Log in  as creator page account and delete newly added page
     await dashboardMainPage.logout();
     await loginPage.login(Constant.USERNAME, Constant.PASSWORD);
     await dashboardMainPage.deletePage(pageName);
+    await dashboardMainPage.verifyPageDeleted(pageName);
 });
 
 test('DA_MP_TC017 - Verify that user can remove any main parent page except "Overview" page successfully and the order of pages stays persistent as long as there is not children ', async ({ page }) => {
     const parentPageName = 'Test' + CommonHelper.generateRandomNumber();
-    const childrenPageName = 'Test Child' + CommonHelper.generateRandomNumber();
-    const expectedMsg: string[] = [
+    const childrenPageName = 'TestChild' + CommonHelper.generateRandomNumber();
+    const expectedMsgWithChildPage: string[] = [
         'Are you sure you want to remove this page?',
         StringHelper.formatString("Cannot delete page '{0}' since it has child page(s).", parentPageName)
+    ];
+
+    const expectedMsgWithoutChildPage: string[] = [
+        'Are you sure you want to remove this page?'
     ];
 
     const loginPage = new LoginPage(page);
     const dashboardMainPage = new DashboardMainPage(page);
     const newPage = new NewPage(page);
 
+    // Login
     await loginPage.goTo(Constant.URL);
     await loginPage.login(Constant.USERNAME, Constant.PASSWORD);
-    await dashboardMainPage.openAddNewPage();
+
+    // Add a new parent page
+    await dashboardMainPage.selectGlobalSettingOption('Add Page');
     await newPage.submitDataOnNewPage(parentPageName, true);
-    await dashboardMainPage.openAddNewPage();
+
+    // Add a children page of newly added page
+    await dashboardMainPage.selectGlobalSettingOption('Add Page');
     await newPage.submitDataOnNewPage(childrenPageName, true, parentPageName);
+
+    // Delete parent page and verify the messages show
     const actualMsg = await dashboardMainPage.deletePage(parentPageName);
-    AssertionHelper.assertEqual(actualMsg, expectedMsg);
+    AssertionHelper.assertEqual(actualMsg, expectedMsgWithChildPage);
+
+    // Delete children page, verify the confirm message shows and check children page is deleted
+    const actualMsg2 = await dashboardMainPage.deletePage(childrenPageName, parentPageName);
+    AssertionHelper.assertEqual(actualMsg2, expectedMsgWithoutChildPage);
+    await dashboardMainPage.verifyPageDeleted(childrenPageName);
+
+    // Delete parent page, verify the confirm message shows and check parent page is deleted
+    const actualMsg3 = await dashboardMainPage.deletePage(parentPageName);
+    AssertionHelper.assertEqual(actualMsg3, expectedMsgWithoutChildPage);
+    await dashboardMainPage.verifyPageDeleted(parentPageName);
+
+    // Click on "Overview" page
+    await dashboardMainPage.clickOnPage('Overview');
+
+    // Check "Delete" link disappears
+    await dashboardMainPage.checkOptionNotExistUnderGlobalSetting('Delete');
 });

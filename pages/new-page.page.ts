@@ -12,6 +12,7 @@ export default class NewPage {
     constructor(private readonly page: Page) { }
 
     async submitDataOnNewPage(pageName: string, isPublic?: boolean, parentPage?: string, noOfColumns?: string, displayAfter?: string): Promise<void> {
+        await this.txtPageName.waitFor();
         await this.txtPageName.fill(pageName);
 
         if (parentPage !== undefined && parentPage !== null) {
