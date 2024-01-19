@@ -24,6 +24,7 @@ export default class LoginPage {
         await this.txtUsername.fill(username);
         await this.txtPassword.fill(password);
         await this.btnLogin.click();
+        await this.page.waitForLoadState();
     }
 
     async verifyMessageDisplays(message: string): Promise<void> {
