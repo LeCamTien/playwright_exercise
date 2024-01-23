@@ -11,9 +11,17 @@ export default class Table {
     }
 
     async isHeaderExist(): Promise<boolean> {
-        return await this.element.locator('//tr/th').count() !== 0;
+        return await this.element.locator('//tr/th').count() > 0;
     }
 
+    /**
+     * Check if the column index exists in row index or not
+     * e.g. Check if the 3rd column exists in the 2nd row or not, if we have the 3rd column in the 2nd row, return true. If not, return false
+     * 
+     * @param rowIdx number The row index, start from 0
+     * @param columnIdx number The column index, start from 0
+     * @returns boolean true/false
+     */
     async isColumnExistWithRowIdx(rowIdx: number, columnIdx: number): Promise<boolean> {
         return await this.element.locator('//tr').nth(rowIdx).locator('//td').nth(columnIdx).isVisible();
     }

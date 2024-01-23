@@ -19,7 +19,7 @@ test('DA_MP_TC014 - Verify that "Public" pages can be visible and accessed by al
 
     // Add a new page
     await dashboardMainPage.selectGlobalSettingOption('Add Page');
-    await newPage.submitDataOnNewPage(pageName, true);
+    await newPage.submitDataOnNewPage({ pageName: pageName, isPublic: true });
 
     // Logout and re-login with another account
     await dashboardMainPage.logout();

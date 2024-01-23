@@ -4,6 +4,7 @@ import DashboardMainPage from "../../pages/dashboard-main.page";
 import Constant from "../../utils/constant";
 import DataProfilesPage from "../../pages/data-profiles.page";
 import { AssertionHelper } from "../../utils/assertion-helper";
+import DataProfiles from "../../data/data-profiles";
 
 test('DA_DP_TC067 - Verify that Data Profiles are listed alphabetically', async ({ page }) => {
     const loginPage = new LoginPage(page);
@@ -18,28 +19,7 @@ test('DA_DP_TC067 - Verify that Data Profiles are listed alphabetically', async 
     await dashboardMainPage.selectMenuOption('Administer->Data Profiles');
 
     // Check Data Profiles are listed alphabetically
-    const expectedPresetDataProfiles: string[] = [
-        'Action Implementation By Status',
-        'Functional Tests',
-        'Test Case Execution',
-        'Test Case Execution Failure Trend',
-        'Test Case Execution History',
-        'Test Case Execution Results',
-        'Test Case Execution Trend',
-        'Test Module Execution',
-        'Test Module Execution Failure Trend',
-        'Test Module Execution Failure Trend by Build',
-        'Test Module Execution History',
-        'Test Module Execution Results',
-        'Test Module Execution Results Report',
-        'Test Module Execution Trend',
-        'Test Module Execution Trend by Build',
-        'Test Module Implementation By Priority',
-        'Test Module Implementation By Status',
-        'Test Module Status per Assigned Users',
-        'Test Objective Execution'
-    ];
     const actualPresetDataProfiles = (await dataProfilesPage.getDataProfiles()).sort();
     console.log(actualPresetDataProfiles);
-    AssertionHelper.assertEqual(actualPresetDataProfiles, expectedPresetDataProfiles.sort());
+    AssertionHelper.assertEqual(actualPresetDataProfiles, DataProfiles.expectedPresetDataProfiles.sort());
 });

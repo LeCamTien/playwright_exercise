@@ -73,8 +73,8 @@ export default class DashboardMainPage extends BasePage {
         await this.checkControlNotExist(StringHelper.formatString(this.globalSettingOptionLocator, option));
     }
 
-    doesPageHaveChildPages(parentPage: string): Promise<boolean> {
+    async doesPageHaveChildPages(parentPage: string): Promise<boolean> {
         const hasChildPageLocator = '//div[@id="main-menu"]//li[contains(@class, "haschild")]/a[text()="{0}"]';
-        return this.page.locator(StringHelper.formatString(hasChildPageLocator, parentPage)).isVisible();
+        return await this.page.locator(StringHelper.formatString(hasChildPageLocator, parentPage)).isVisible();
     }
 }

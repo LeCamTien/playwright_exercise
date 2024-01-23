@@ -30,11 +30,11 @@ test('DA_MP_TC017 - Verify that user can remove any main parent page except "Ove
 
     // Add a new parent page
     await dashboardMainPage.selectGlobalSettingOption('Add Page');
-    await newPage.submitDataOnNewPage(parentPageName, true);
+    await newPage.submitDataOnNewPage({ pageName: parentPageName, isPublic: true });
 
     // Add a children page of newly added page
     await dashboardMainPage.selectGlobalSettingOption('Add Page');
-    await newPage.submitDataOnNewPage(childrenPageName, true, parentPageName);
+    await newPage.submitDataOnNewPage({ pageName: childrenPageName, isPublic: true, parentPage: parentPageName });
 
     // Delete parent page and verify the messages show
     const actualMsg = await dashboardMainPage.deletePage(parentPageName);

@@ -1,5 +1,13 @@
 import { Locator, Page } from "@playwright/test";
 
+export type NewPageData = {
+    pageName: string;
+    isPublic?: boolean;
+    parentPage?: string;
+    noOfColumns?: number;
+    displayAfter?: string;
+};
+
 export default class NewPage {
     readonly txtPageName: Locator = this.page.locator('#name');
     readonly cbbParentPage: Locator = this.page.locator('#parent');
@@ -11,25 +19,16 @@ export default class NewPage {
 
     constructor(private readonly page: Page) { }
 
-    async submitDataOnNewPage(pageName: string, isPublic?: boolean, parentPage?: string, noOfColumns?: string, displayAfter?: string): Promise<void> {
-        await this.txtPageName.waitFor();
-        await this.txtPageName.fill(pageName);
-
-        if (parentPage !== undefined && parentPage !== null) {
-            await this.cbbParentPage.selectOption({ label: parentPage });
+    async submitDataOnNewPage(data: NewPageData): Promise<void> {
+        if (data.pageName) {
+            await this.txtPageName.waitFor();
+            await this.txtPageName.fill(data.pageName);
         }
 
-        if (noOfColumns !== undefined && noOfColumns !== null) {
-            await this.cbbNumberOfColumns.selectOption({ label: noOfColumns });
-        }
-
-        if (displayAfter !== undefined && displayAfter !== null) {
-            await this.cbbDisplayAfter.selectOption({ label: displayAfter });
-        }
-
-        if (isPublic !== undefined && isPublic !== null) {
-            await this.cbxPublic.check();
-        }
+        data.isPublic && await this.cbxPublic.check();
+        data.parentPage && await this.cbbParentPage.selectOption({ label: data.parentPage });
+        data.noOfColumns && await this.cbbNumberOfColumns.selectOption({ label: data.noOfColumns.toString() });
+        data.displayAfter && await this.cbbDisplayAfter.selectOption({ label: data.displayAfter });
 
         await this.btnOk.click();
         await this.page.waitForLoadState();
